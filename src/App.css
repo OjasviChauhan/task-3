@@ -2,11 +2,6 @@
   margin: 0;
 }
 
-html {
-  background-color: #fba62f;
-  overflow: hidden;
-}
-
 .App {
   display: flex;
   flex-direction: column;

@@ -2,25 +2,28 @@ import { useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import Weather from "./components/Weather";
 import { weatherActions } from "./store/weatherSlice";
+import axios from "axios";
 import "./App.css";
 
 function App() {
   const userCity = useRef();
-  const [isClicked, setIsClicked] = useState(false);
+  const [Clicked, setClicked] = useState(false);
+  const [Loading, setLoading] = useState(0);
 
   const dispatch = useDispatch();
   const weatherData = useSelector((state) => state.weather.weather_data);
 
-  function fetchWeather(city) {
-    fetch(
-      `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=c0ce945fbd27b35f620422f7b0dc33d6&units=metric`
-    )
+  async function fetchWeather(city) {
+    setLoading(1);
+    await axios
+      .get(
+        `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=c0ce945fbd27b35f620422f7b0dc33d6&units=metric`
+      )
       .then((response) => {
-        return response.json();
+        dispatch(weatherActions.weatherDataReducer(response.data));
       })
-      .then((data) => {
-        dispatch(weatherActions.weatherDataReducer(data));
-      });
+      .catch((err) => {});
+    setLoading(2);
   }
 
   function clickHandler() {
@@ -28,13 +31,13 @@ function App() {
     if (city.length === 0) alert("Please enter your city first");
     else {
       fetchWeather(city);
-      setIsClicked(true);
+      setClicked(true);
     }
   }
 
   return (
     <div className="App">
-      {!isClicked ? (
+      {!Clicked && (
         <div className="index">
           <h1> Enter your city </h1>
           <input type="text" required id="title" ref={userCity} />
@@ -44,9 +47,9 @@ function App() {
             </button>
           </div>
         </div>
-      ) : (
-        <Weather data={weatherData} />
       )}
+      {Clicked && Loading === 1 && <h1> Loading... </h1>}
+      {Loading === 2 && <Weather cityName={userCity} data={weatherData} />}
     </div>
   );
 }

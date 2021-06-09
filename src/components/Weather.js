@@ -21,24 +21,26 @@ function Weather(props) {
         `${state.apiUrl}?key=${state.apiKey}&q=${props.data.name}&image_type=photo`
       )
       .then((res) => {
+        //console.log(res.data);
+        setImageData(res.data);
         dispatch(cityActions.cityDataReducer(res.data));
       });
   }
 
   useEffect(() => {
     fetchImageHandler();
-    setImageData(cityData);
-  }, [props.cityName]);
+    //console.log(cityData);
+  }, []);
 
   // style={{ backgroundImage: `url(${})` }}
-  console.log(cityData);
+  console.log(imageData);
   // console.log(typeof cityData);
   // console.log(imageData);
   // console.log(props.data);
 
   return props.data.name ? (
     <div>
-      <Home city={props.cityName} data={cityData} />
+      <Home city={props.cityName} data={imageData} />
       <h1>{props.data?.main?.temp} °C</h1>
       <h5>
         {props.data?.name}, {props.data.sys.country}
